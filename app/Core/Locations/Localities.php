@@ -14,8 +14,7 @@ final class Localities implements Locator
         string $nameFragment,
         int $limit = 5,
         bool $byPopularity = true
-    ): array
-    {
+    ): array {
         return $this->repository->findLocalities(
             $nameFragment,
             $limit,

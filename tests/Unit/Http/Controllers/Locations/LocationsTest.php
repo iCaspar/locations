@@ -19,7 +19,7 @@ final class LocationsTest extends TestCase
         $repository = new InMemoryRepository();
         $localities = new Localities($repository);
         $controller = new Locations($localities);
-        $request = new Request();
+        $request    = new Request();
         $request->merge(['name' => 'ant']);
         $response = $controller->findLocalities($request);
         $this->assertSame(

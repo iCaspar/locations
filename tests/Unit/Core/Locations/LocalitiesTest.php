@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Core\Locations;
 
 use App\Infrastructure\Locations\InMemoryRepository;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 final class LocalitiesTest extends TestCase

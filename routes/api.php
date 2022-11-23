@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Localities;
+use App\Http\Controllers\Locations\Locations;
 use Illuminate\Support\Facades\Route;
 
-Route::get('location/{locality}', [Localities::class, 'findLocality']);
+Route::get('location/{locality}', [Locations::class, 'findLocality']);

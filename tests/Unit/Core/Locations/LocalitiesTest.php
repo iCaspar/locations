@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Locations;
 
+use App\Infrastructure\Locations\InMemoryRepository;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -12,15 +13,12 @@ final class LocalitiesTest extends TestCase
     /**
      * @test
      */
-    public function finds_localities_matching_name_fragment_using_repository(): void
+    public function finds_5_sorted_localities_matching_name_fragment(): void
     {
-        $repository = Mockery::mock(Repository::class);
-        $repository->expects('findLocalities')
-                   ->with('ant', 5, true)
-                   ->andReturns(['Canton', 'San Antonio', 'Antwerp']);
+        $repository = new InMemoryRepository();
         $localities = new Localities($repository);
         $this->assertSame(
-            ['Canton', 'San Antonio', 'Antwerp'],
+            ['Atlanta', 'San Antonio', 'Antwerp', 'Canton', 'Santa Cruz'],
             $localities->find('ant')
         );
     }
@@ -28,71 +26,25 @@ final class LocalitiesTest extends TestCase
     /**
      * @test
      */
-    public function limits_found_localities_to_5_names_by_default(): void
+    public function finds_given_number_sorted_localities_matching_name_fragment(): void
     {
-        $repository = Mockery::mock(Repository::class);
-        $repository->expects('findLocalities')
-                   ->with('ant', 5, true)
-                   ->andReturns(
-                       ['Canton', 'San Antonio', 'Antwerp', 'Atlanta', 'Antigua']
-                   );
+        $repository = new InMemoryRepository();
+        $localities = new Localities($repository);
+        $this->assertSame(
+            ['Atlanta', 'San Antonio', 'Antwerp'],
+            $localities->find('ant', 3)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function does_not_sort_localities_matching_name_fragment_when_specified(): void
+    {
+        $repository = new InMemoryRepository();
         $localities = new Localities($repository);
         $this->assertSame(
             ['Canton', 'San Antonio', 'Antwerp', 'Atlanta', 'Antigua'],
-            $localities->find('ant')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function limits_found_localities_to_specified_number(): void
-    {
-        $repository = Mockery::mock(Repository::class);
-        $repository->expects('findLocalities')
-                   ->with('ant', 4, true)
-                   ->andReturns(
-                       ['Canton', 'San Antonio', 'Antwerp', 'Antigua']
-                   );
-        $localities = new Localities($repository);
-        $this->assertSame(
-            ['Canton', 'San Antonio', 'Antwerp', 'Antigua'],
-            $localities->find('ant', 4)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function sorts_found_localities_by_popularity(): void
-    {
-        $repository = Mockery::mock(Repository::class);
-        $repository->expects('findLocalities')
-                   ->with('ant', 5, true)
-                   ->andReturns(
-                       ['Canton', 'San Antonio', 'Antwerp', 'Antigua']
-                   );
-        $localities = new Localities($repository);
-        $this->assertSame(
-            ['Canton', 'San Antonio', 'Antwerp', 'Antigua'],
-            $localities->find('ant')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function does_not_sort_found_localities_when_specified(): void
-    {
-        $repository = Mockery::mock(Repository::class);
-        $repository->expects('findLocalities')
-                   ->with('ant', 5, false)
-                   ->andReturns(
-                       ['Canton', 'San Antonio', 'Antwerp', 'Antigua']
-                   );
-        $localities = new Localities($repository);
-        $this->assertSame(
-            ['Canton', 'San Antonio', 'Antwerp', 'Antigua'],
             $localities->find('ant', 5, false)
         );
     }

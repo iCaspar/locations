@@ -16,9 +16,7 @@ final class LocationsTest extends TestCase
      */
     public function returns_a_list_of_localities_given_a_name_fragment(): void
     {
-        $repository = new InMemoryRepository();
-        $localities = new Localities($repository);
-        $controller = new Locations($localities);
+        $controller = $this->controller();
         $request    = new Request();
         $request->merge(['name' => 'ant']);
         $response = $controller->findLocalities($request);
@@ -26,5 +24,27 @@ final class LocationsTest extends TestCase
             ['Atlanta', 'San Antonio', 'Antwerp', 'Canton', 'Santa Cruz'],
             json_decode($response->getContent(), true)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function returns_error_when_name_not_provided(): void
+    {
+        $controller = $this->controller();
+        $request = new Request();
+        $response = $controller->findLocalities($request);
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(
+            ['name' => ['The name field is required.']],
+            json_decode($response->getContent(), true)
+        );
+    }
+
+    private function controller(): Locations
+    {
+        $repository = new InMemoryRepository();
+        $localities = new Localities($repository);
+        return new Locations($localities);
     }
 }
